@@ -1,22 +1,15 @@
 package com.zipcodewilmington.singlylinkedlist;
 
+import java.util.Comparator;
+
 /**
  * Created by leon on 1/10/18.
  */
-public class SinglyLinkedList<T> {
+public class SinglyLinkedList<T extends Comparable<T>> {
 
     private Node<T> head; //null cause I didnt make an instance of the object aka Node node = new Node(info);
 
     // Node class representing each element in the singly linked list
-    private static class Node<T> {
-        T value;
-        Node<T> next;
-
-        Node(T value) {
-            this.value = value;
-            this.next = null;
-        }
-    }
 
     public void add(T value) {
         Node<T> newNode = new Node<T>(value);
@@ -90,48 +83,74 @@ public class SinglyLinkedList<T> {
         return count;
     }
 
-    public int get(int index) {
+    public Node<T> get(int index) {
         Node<T> currentNode = head;
+        int count = 0;
         while (currentNode != null) {
-
-        }
-        return 0;
-    }
-
-    public void print() {
-        Node<T> currentNode = head;
-
-        while (currentNode != null) {
-            System.out.print(currentNode.value);
+            if (count == index){
+                return currentNode;
+            }
+            count++;
             currentNode = currentNode.next;
         }
-        System.out.println();
+        return null;
     }
+    public void sort() {
+        if (head == null || head.next == null) {
+            return;
+        }
 
-    public static void main(String[] args) {
-        SinglyLinkedList list = new SinglyLinkedList();
-        SinglyLinkedList listy = new SinglyLinkedList();
+        int listSize = size();
+        boolean swapped;
 
-        listy.add(9);
-        listy.add(8);
-        listy.add(7);
+        for (int i = 0; i < listSize - 1; i++) {
+            Node<T> currentNode = head;
+            Node<T> nextNode = head.next;
+            Node<T> previousNode = null;
+            swapped = false;
 
-        list.add(1);
-        list.add(2);
-        list.add(3);
-        list.add(4);
+            for (int j = 0; j < listSize - 1 - i; j++) {
+                if (currentNode.value.compareTo(nextNode.value) > 0) {
+                    swapped = true;
 
-        list.print();
+                    if (previousNode != null) {
+                        previousNode.next = nextNode;
+                    } else {
+                        head = nextNode;
+                    }
 
-        list.remove(3);
+                    currentNode.next = nextNode.next;
+                    nextNode.next = currentNode;
 
-        list.print();
+                    previousNode = nextNode;
+                    nextNode = currentNode.next;
+                } else {
+                    previousNode = currentNode;
+                    currentNode = nextNode;
+                    nextNode = nextNode.next;
+                }
+            }
 
-        System.out.println("Contains 3? " + list.contains(3));
-        System.out.println("Contains 2? " + list.contains(2));
-        System.out.println("Index of number? " + list.find(2));
-        System.out.println("How large is the list? " + list.size());
-        System.out.println("Value at index: " + list.get(2));
+            if (!swapped) {
+                break;
+            }
+        }
+    }
+    public SinglyLinkedList<T> copy() {
+        SinglyLinkedList<T> newList = new SinglyLinkedList<T>();
+         if (head == null) {
+             return newList;
+         }
+         newList.head = new Node<T>(head.value);
+         Node<T> original = head.next;
+         Node<T> copy = newList.head;
+
+         while (original != null) {
+             copy.next = new Node<T>(original.value);
+             original = original.next;
+             copy = copy.next;
+        }
+         return newList;
     }
 }
 
